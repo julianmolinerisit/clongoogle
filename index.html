@@ -16,8 +16,8 @@
                 <li><a href="">Gmail</a></li>
                 <li><a href="">Imágenes</a></li>
                 <li class="menu-icon"><a href=""></a></li>
-                <li><a href="">
-                        <img src="https://lh3.googleusercontent.com/ogw/AAEL6sg-AW5qX4ubDoxfIL8CpfS0GftqZBXAh0i-bjHp=s32-c-mo"
+                <li><a href=""><img
+                            src="https://lh3.googleusercontent.com/ogw/AAEL6sg-AW5qX4ubDoxfIL8CpfS0GftqZBXAh0i-bjHp=s32-c-mo"
                             alt=""></a></li>
             </ul>
         </nav>
@@ -29,9 +29,10 @@
         <section class="main-input">
             <div class="main-input-container">
                 <span class="search-icon"></span>
-                <input type="text">
-                <a class="micro-icon" href=""></a>
-
+                <form action="https://www.google.com/search" method="GET">
+                    <input type="text" name="q">
+                    <button type="submit" id="microphone-button" class="micro-icon"></button>
+                </form>
             </div>
         </section>
         <section class="main-buttons">
@@ -44,6 +45,80 @@
         </section>
 
     </main>
+    <footer>
+        <ul class="footer-left">
+            <li><a href="">Publicidad</a></li>
+            <li><a href="">Negocios</a></li>
+            <li><a href="">Acerca de</a></li>
+            <li><a href="">Como funciona la busqueda</a></li>
+        </ul>
+        <ul class="footer-right">
+            <li><a href="">Privacidad</a></li>
+            <li><a href="">Terminos y condiciones</a></li>
+            <li><a href="">Preferencias</a></li>
+        </ul>
+    </footer>
+
+    <script>
+        // Solicitar permiso para acceder al micrófono
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(function (stream) {
+                console.log('Permiso concedido');
+            })
+            .catch(function (err) {
+                console.log('Error al solicitar permiso: ' + err);
+            });
+
+        const inputField = document.querySelector('input[type="text"]');
+        const microphoneButton = document.querySelector('#microphone-button');
+
+        // Comprueba si el navegador es compatible con el reconocimiento de voz
+        if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+
+            // Agrega un listener para el evento click del botón del micrófono
+            microphoneButton.addEventListener('click', () => {
+                recognition.start();
+            });
+
+            // Agrega un listener para el evento de error del reconocimiento de voz
+            recognition.addEventListener('error', (event) => {
+                console.error('Error en el reconocimiento de voz: ' + event.error);
+            });
+
+            // Agrega un listener para el evento de fin del reconocimiento de voz
+            recognition.addEventListener('end', () => {
+                microphoneButton.classList.remove('recording');
+            });
+
+            // Agrega un listener para el evento de
+            recognition.addEventListener('start', () => {
+                microphoneButton.classList.add('recording');
+            });
+
+            // Agrega un listener para el evento de resultado del reconocimiento de voz
+            recognition.addEventListener('result', (event) => {
+                const speechToText = event.results[0][0].transcript;
+                inputField.value = speechToText;
+            });
+        } else {
+            console.log('El reconocimiento de voz no es compatible con este navegador.');
+        }
+
+        const form = document.querySelector('form');
+
+// Agrega un listener para el evento submit del formulario
+form.addEventListener('submit', (event) => {
+    event.preventDefault(); // Previene el comportamiento por defecto de enviar el formulario
+
+    const query = inputField.value;
+    window.location.href = `https://www.google.com/search?q=${query}`; // Redirige al usuario a la página de búsqueda de Google
+});
+
+
+    </script>
+
 </body>
 
 </html>
